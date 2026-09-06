@@ -1,13 +1,13 @@
 #include "wal.h"
 
-void put(unordered_map<string, string> &mp, const string &key, const string &value, ofstream &outFile){
-    append({Operation::Put, (uint32_t)key.size(), (uint32_t)value.size(), key, value}, outFile);
+void put(unordered_map<string, string> &mp, const string &key, const string &value, int fd){
+    append({Operation::Put, (uint32_t)key.size(), (uint32_t)value.size(), key, value}, fd);
     mp[key] = value;
     return;
 }
 
-void del(unordered_map<string, string> &mp, const string key, ofstream &outFile){
-    append({Operation::Delete, (uint32_t)key.size(), 0, key, ""}, outFile);
+void del(unordered_map<string, string> &mp, const string key, int fd){
+    append({Operation::Delete, (uint32_t)key.size(), 0, key, ""}, fd);
     mp.erase(key);
     return;
 }
@@ -24,8 +24,12 @@ int main()
 {
     unordered_map<string, string> mp;
     string command;
-    ofstream outFile("wal.bin", ios::binary | ios::app);
     recover(mp);
+    int fd = open("wal.bin", O_WRONLY | O_APPEND | O_CREAT, 0644);
+    if(fd < 0){
+        cerr << "Failed to open WAL file.\n";
+        return 1;
+    }
 
     while(true){
         cout << "> ";
@@ -45,11 +49,11 @@ int main()
             }
         }else if(operation == "put"){
             ss >> key >> value;
-            put(mp, key, value, outFile);
+            put(mp, key, value, fd);
             cout << "Put Done";
         }else if(operation == "del"){
             ss >> key;
-            del(mp, key, outFile);
+            del(mp, key, fd);
             cout << "Delete Done";
         }else{
             cout << "Not a valid operator";
@@ -57,7 +61,7 @@ int main()
 
         cout << "\n";
     }
-    outFile.close();
+    close(fd);
 
     return 0;
 }

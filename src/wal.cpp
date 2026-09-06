@@ -1,21 +1,21 @@
 #include "wal.h"
 
-void append(Record rcd, ofstream &outFile){
-    outFile.write(reinterpret_cast<char*>(&rcd.operation), sizeof(rcd.operation));
-    outFile.write(reinterpret_cast<char*>(&rcd.key_size), sizeof(rcd.key_size));
-    outFile.write(reinterpret_cast<char*>(&rcd.value_size), sizeof(rcd.value_size));
-    outFile.write(reinterpret_cast<char*>(rcd.key.data()), rcd.key_size);
-    outFile.write(reinterpret_cast<char*>(rcd.value.data()), rcd.value_size);
-    outFile.flush();
+void append(Record rcd, int fd){
+    write(fd, &rcd.operation, sizeof(rcd.operation));
+    write(fd, &rcd.key_size, sizeof(rcd.key_size));
+    write(fd, &rcd.value_size, sizeof(rcd.value_size));
+    write(fd, rcd.key.data(), rcd.key_size);
+    write(fd, rcd.value.data(), rcd.value_size);
+    fsync(fd);
 }
 
 void recover(unordered_map<string, string> &mp){
     ifstream inFile("wal.bin", ios::binary);
     if(inFile.is_open()){
-        cout << "Reading File content: \n";
+       return;
     }
     Operation operation; 
-    int key_size, value_size;
+    uint32_t key_size, value_size;
 
     while(inFile.read(reinterpret_cast<char*>(&operation), sizeof(operation))){
         inFile.read(reinterpret_cast<char*>(&key_size), sizeof(key_size));

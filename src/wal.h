@@ -1,6 +1,8 @@
 #pragma once
 
 #include<bits/stdc++.h>
+#include <fcntl.h>
+#include <unistd.h>
 using namespace std;
 
 enum Operation {
@@ -16,6 +18,6 @@ struct Record{
     string value;
 };
 
-void append(Record rcd, ofstream &outFile);
+void append(Record rcd, int fd);
 
 void recover(unordered_map<string, string> &mp);
