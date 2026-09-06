@@ -1,6 +1,6 @@
 #include "wal.h"
 
-void append(RecordHeader rcd, ofstream &outFile){
+void append(Record rcd, ofstream &outFile){
     outFile.write(reinterpret_cast<char*>(&rcd.operation), sizeof(rcd.operation));
     outFile.write(reinterpret_cast<char*>(&rcd.key_size), sizeof(rcd.key_size));
     outFile.write(reinterpret_cast<char*>(&rcd.value_size), sizeof(rcd.value_size));
@@ -14,7 +14,8 @@ void recover(unordered_map<string, string> &mp){
     if(inFile.is_open()){
         cout << "Reading File content: \n";
     }
-    int operation, key_size, value_size;
+    Operation operation; 
+    int key_size, value_size;
 
     while(inFile.read(reinterpret_cast<char*>(&operation), sizeof(operation))){
         inFile.read(reinterpret_cast<char*>(&key_size), sizeof(key_size));
@@ -25,11 +26,9 @@ void recover(unordered_map<string, string> &mp){
         inFile.read(reinterpret_cast<char*>(key.data()), key_size);
         inFile.read(reinterpret_cast<char*>(value.data()), value_size);
 
-        cout << operation << " " << key << " " << value << "\n";
-
-        if(operation == 1){
+        if(operation == Operation::Put){
             mp[key] = value;
-        }else if(operation == 2){
+        }else if(operation == Operation::Delete){
             mp.erase(key);
         }
     }

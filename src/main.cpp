@@ -1,13 +1,13 @@
 #include "wal.h"
 
 void put(unordered_map<string, string> &mp, const string &key, const string &value, ofstream &outFile){
-    append({1, (int)key.size(), (int)value.size(), key, value}, outFile);
+    append({Operation::Put, (uint32_t)key.size(), (uint32_t)value.size(), key, value}, outFile);
     mp[key] = value;
     return;
 }
 
 void del(unordered_map<string, string> &mp, const string key, ofstream &outFile){
-    append({2, (int)key.size(), 0, key, ""}, outFile);
+    append({Operation::Delete, (uint32_t)key.size(), 0, key, ""}, outFile);
     mp.erase(key);
     return;
 }
