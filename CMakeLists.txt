@@ -11,4 +11,12 @@ add_executable(kvstore
     src/wal.cpp
 )
 
+add_executable(kvstore_bench
+    benchmarks/benchmarks.cpp
+    src/kvstore.cpp
+    src/wal.cpp
+)
+
 target_include_directories(kvstore PRIVATE include)
+
+target_include_directories(kvstore_bench PRIVATE include)
