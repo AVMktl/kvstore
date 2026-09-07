@@ -18,6 +18,14 @@ struct Record{
     string value;
 };
 
-void append(Record rcd, int fd);
+class WAL {
+    private:
+        string fileName;
+        
+    public:
+        WAL(string filename);
 
-void recover(unordered_map<string, string> &mp);
+        void append(Record rcd, int fd);
+
+        void recover(unordered_map<string, string> &mp); 
+};

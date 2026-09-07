@@ -1,6 +1,8 @@
 #include "wal.h"
 
-void append(Record rcd, int fd){
+WAL::WAL(string filename): fileName(filename){}
+
+void WAL::append(Record rcd, int fd){
     write(fd, &rcd.operation, sizeof(rcd.operation));
     write(fd, &rcd.key_size, sizeof(rcd.key_size));
     write(fd, &rcd.value_size, sizeof(rcd.value_size));
@@ -9,10 +11,10 @@ void append(Record rcd, int fd){
     fsync(fd);
 }
 
-void recover(unordered_map<string, string> &mp){
-    ifstream inFile("wal.bin", ios::binary);
+void WAL::recover(unordered_map<string, string> &mp){
+    ifstream inFile(fileName, ios::binary);
     if(!inFile.is_open()){
-       return;
+        return;
     }
     Operation operation; 
     uint32_t key_size, value_size;
@@ -38,7 +40,7 @@ void recover(unordered_map<string, string> &mp){
 
     inFile.close();
 
-    int fd = open("wal.bin", O_RDWR);
+    int fd = open(fileName.c_str(), O_RDWR);
     if(fd >= 0){
         ftruncate(fd, last_valid_pos);
         close(fd);
