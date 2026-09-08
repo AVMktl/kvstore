@@ -84,7 +84,7 @@ Key don't exist
 
 ## Benchmarks
 
-The project includes a simple benchmark for measuring:
+The project includes benchmarks for:
 
 - PUT throughput
 - GET throughput
@@ -96,27 +96,32 @@ The project includes a simple benchmark for measuring:
 |---|---:|---|
 | PUT | 10,000 | Insert unique `Key0` ... `Key9999` with corresponding values |
 | GET | 10,000 | Read the same 10,000 existing keys from the in-memory hash index |
-| Recovery | 10,000 WAL records | Replay the WAL and rebuild the in-memory index |
+| Recovery | 10,000 WAL records | Replay the WAL and rebuild the in-memory hash index |
 
-For each PUT, the WAL record is written to disk and `fsync()` is called before the in-memory index is updated.
+Each PUT appends a record to the WAL and calls `fsync()` before updating the in-memory index.
 
 ### Results
 
-Benchmark run on an Azure VM:
+| Benchmark | Azure VM | MacBook Air M4 |
+|---|---:|---:|
+| PUT throughput | 355 ops/sec | 44,643 ops/sec |
+| GET throughput | 3.33M ops/sec | 5.0M ops/sec |
+| WAL recovery | 7 ms | 12 ms |
 
-| Benchmark | Result |
-|---|---:|
-| PUT throughput | 324.3 ops/sec |
-| GET throughput | 3.33M ops/sec |
-| WAL recovery | 7 ms |
+### Benchmark Environments
 
-### Benchmark Environment
-
+**Azure VM**
 - CPU: AMD EPYC 7763
 - vCPU: 2
 - Memory: 8 GB
 - Architecture: x86_64
 - Environment: Microsoft Azure VM
-- C++ standard: C++17
 
-Results depend on hardware, storage performance, VM configuration, Design and Implementation.
+**MacBook Air M4**
+- Chip: Apple M4
+- CPU cores: 10 (4 performance, 6 efficiency)
+- Memory: 16 GB
+- Architecture: arm64
+- Operating system: macOS
+
+Benchmark results are environment-dependent and can vary with storage performance, virtualization, filesystem behavior and system load. PUT performance is particularly affected by the latency of `fsync()`.
