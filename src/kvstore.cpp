@@ -30,4 +30,5 @@ bool KVStore::get(const string &key, string &value){
 
 void KVStore::exit(){
     close(fd);
+    mp.clear();
 }
