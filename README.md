@@ -46,10 +46,9 @@ flowchart TD
 ## Build
 
 ```bash
-mkdir build
+cmake -S . -B build
+cmake --build build
 cd build
-cmake ..
-cmake --build .
 ```
 
 ## Run
@@ -62,6 +61,11 @@ Run the KV Store:
 Run the benchmarks:
 ```bash
 ./kvstore_bench
+```
+
+Run the tests:
+```bash
+ctest
 ```
 
 ## Example
