@@ -1,0 +1,37 @@
+# The name displayed in the GitHub Actions UI tab
+name: Continuous Integration
+
+# 1. Triggers (Events)
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# 2. Pipeline Execution (Jobs)
+jobs:
+  test-and-build:
+    # 3. Virtual Environment (Runner)
+    runs-on: ubuntu-latest
+
+    # 4. Sequential Tasks (Steps)
+    steps:
+      # Step 1: Pull down the repository code onto the runner machine
+      - name: Checkout Repository Code
+        uses: actions/checkout@v6
+
+      # Step 2: Configure CMake
+      - name: Configure CMake
+        run: cmake -S . -B build
+
+      # Step 3: Build
+      - name: Build
+        run: cmake --build build
+
+      # Step 4: Run Automated Tests
+      - name : Run Automated Tests
+        run: ctest --test-dir build --output-on-failure
+
+      # Step 5: Run benchmark
+      - name: Run benchmark
+        run: ./build/kvstore_bench
